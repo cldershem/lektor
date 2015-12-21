@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import six
 import sys
 import re
 import json
@@ -12,7 +13,10 @@ import traceback
 import unicodedata
 import multiprocessing
 import hashlib
-from Queue import Queue
+try:
+    from Queue import Queue
+except ImportError:
+    from queue import Queue
 from threading import Thread
 from datetime import datetime
 from contextlib import contextmanager
@@ -27,6 +31,9 @@ from jinja2 import is_undefined
 from markupsafe import Markup
 
 from lektor.uilink import BUNDLE_BIN_PATH, EXTRA_PATHS
+
+
+basestring = six.string_types
 
 
 is_windows = (os.name == 'nt')
@@ -53,7 +60,7 @@ def cleanup_path(path):
 
 
 def to_os_path(path):
-    return path.strip('/').replace('/', os.path.sep).decode(fs_enc, 'replace')
+    return path.strip('/').replace('/', os.path.sep)
 
 
 def is_path(path):
@@ -144,7 +151,7 @@ def decode_flat_data(itemiter, dict_cls=dict):
             return _convert(container)
         elif container.pop(_list_marker, False):
             return [_convert(x[1]) for x in sorted(container.items())]
-        return dict_cls((k, _convert(v)) for k, v in container.iteritems())
+        return dict_cls((k, _convert(v)) for k, v in six.iteritems(container))
 
     result = dict_cls()
 
@@ -172,7 +179,7 @@ def merge(a, b):
         for idx, (item_1, item_2) in enumerate(zip(a, b)):
             a[idx] = merge(item_1, item_2)
     if isinstance(a, dict) and isinstance(b, dict):
-        for key, value in b.iteritems():
+        for key, value in six.iteritems(b):
             a[key] = merge(a.get(key), value)
         return a
     return a
@@ -314,9 +321,9 @@ class WorkerPool(object):
 
 def slugify(value):
     # XXX: not good enough
-    rv = u' '.join(value.strip().encode(
-        'ascii', 'ignore').strip().split()).lower()
+    rv = ' '.join(value.strip().lower().split())
     words = _slug_re.findall(rv)
+
     return '-'.join(words)
 
 
@@ -375,7 +382,7 @@ def prune_file_and_folder(name, base):
 
 
 def sort_normalize_string(s):
-    return unicodedata.normalize('NFD', unicode(s).lower().strip())
+    return unicodedata.normalize('NFD', six.text_type(s).lower().strip())
 
 
 def get_dependent_url(url_path, suffix, ext=None):
@@ -391,7 +398,7 @@ def atomic_open(filename, mode='r'):
     if 'r' not in mode:
         fd, tmp_filename = tempfile.mkstemp(
             dir=os.path.dirname(filename), prefix='.__atomic-write')
-        os.chmod(tmp_filename, 0644)
+        os.chmod(tmp_filename, 0o644)
         f = os.fdopen(fd, mode)
     else:
         f = open(filename, mode)
@@ -406,7 +413,7 @@ def atomic_open(filename, mode='r'):
                 os.remove(tmp_filename)
             except OSError:
                 pass
-        raise exc_type, exc_value, tb
+        raise (exc_type, exc_value, tb)
     else:
         f.close()
         if tmp_filename is not None:
@@ -508,7 +515,7 @@ def get_structure_hash(params):
             h.update('T%d;' % obj)
         elif isinstance(obj, bytes):
             h.update('B%d;%s;' % (len(obj), obj))
-        elif isinstance(obj, unicode):
+        elif isinstance(obj, six.text_type()):
             h.update('S%d;%s;' % (len(obj), obj.encode('utf-8')))
         elif hasattr(obj, '__get_lektor_param_hash__'):
             obj.__get_lektor_param_hash__(h)

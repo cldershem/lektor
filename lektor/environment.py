@@ -3,6 +3,7 @@ import re
 import uuid
 import copy
 from functools import update_wrapper
+import six
 
 import jinja2
 from babel import dates
@@ -18,6 +19,8 @@ from lektor.i18n import get_i18n_block
 from lektor.context import url_to, get_asset_url, site_proxy, \
      config_proxy, get_ctx, get_locale
 from lektor.pluginsystem import PluginController
+
+basestring = six.string_types
 
 
 # Special value that identifies a target to the primary alt
@@ -110,7 +113,7 @@ def update_config_from_ini(config, inifile):
                 'locale': inifile.get('alternatives.%s.locale' % alt, 'en_US'),
             }
 
-    for alt, alt_data in config['ALTERNATIVES'].iteritems():
+    for alt, alt_data in six.iteritems(config['ALTERNATIVES']):
         if alt_data['primary']:
             config['PRIMARY_ALTERNATIVE'] = alt
             break
@@ -287,7 +290,7 @@ class Config(object):
     def get_alternative_url_prefixes(self):
         """Returns a list of alternative url prefixes by length."""
         items = [(v['url_prefix'].lstrip('/'), k)
-                 for k, v in self.values['ALTERNATIVES'].iteritems()
+                 for k, v in six.iteritems(self.values['ALTERNATIVES'])
                  if v['url_prefix']]
         items.sort(key=lambda x: -len(x[0]))
         return items
@@ -295,7 +298,7 @@ class Config(object):
     def get_alternative_url_suffixes(self):
         """Returns a list of alternative url suffixes by length."""
         items = [(v['url_suffix'].rstrip('/'), k)
-                 for k, v in self.values['ALTERNATIVES'].iteritems()
+                 for k, v in six.iteritems(self.values['ALTERNATIVES'])
                  if v['url_suffix']]
         items.sort(key=lambda x: -len(x[0]))
         return items

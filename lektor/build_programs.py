@@ -1,4 +1,5 @@
 import os
+import six
 import shutil
 
 from itertools import chain
@@ -34,7 +35,7 @@ class SourceInfo(object):
         en_title = self.path
         if 'en' in title_i18n:
             en_title = title_i18n['en']
-        for key, value in title_i18n.iteritems():
+        for key, value in six.iteritems(title_i18n):
             if key == 'en':
                 continue
             if value != en_title:

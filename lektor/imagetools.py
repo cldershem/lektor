@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import six
 import imghdr
 import struct
 import exifread
@@ -40,7 +41,7 @@ class EXIFInfo(object):
 
     def to_dict(self):
         rv = {}
-        for key, value in self.__class__.__dict__.iteritems():
+        for key, value in six.iteritems(self.__class__.__dict__):
             if key[:1] != '_' and isinstance(value, property):
                 rv[key] = getattr(self, key)
         return rv

@@ -1,4 +1,5 @@
 import os
+import six
 import json
 
 from lektor.uilink import UI_LANG
@@ -55,7 +56,7 @@ def get_i18n_block(inifile_or_dict, key):
     key.
     """
     rv = {}
-    for k, v in inifile_or_dict.iteritems():
+    for k, v in six.iteritems(inifile_or_dict):
         if k == key:
             # English is the internal default language with preferred
             # treatment.

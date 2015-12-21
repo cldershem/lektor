@@ -1,4 +1,5 @@
 import os
+import six
 import errno
 import select
 import shutil
@@ -425,7 +426,7 @@ class FtpPublisher(Publisher):
         for artifact_name in current_artifacts.iterkeys():
             known_folders.add(posixpath.dirname(artifact_name))
 
-        for artifact_name, checksum in server_artifacts.iteritems():
+        for artifact_name, checksum in six.iteritems(server_artifacts):
             if artifact_name not in current_artifacts:
                 con.log_buffer.append('000 Deleting %s' % artifact_name)
                 con.delete_file(artifact_name)
@@ -436,7 +437,7 @@ class FtpPublisher(Publisher):
 
         if duplicates or server_artifacts != current_artifacts:
             listing = []
-            for artifact_name, checksum in current_artifacts.iteritems():
+            for artifact_name, checksum in six.iteritems(current_artifacts):
                 listing.append('%s|%s\n' % (artifact_name, checksum))
             listing.sort()
             con.upload_file('.lektor/.listing.tmp', ''.join(listing))

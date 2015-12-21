@@ -1,3 +1,4 @@
+import six
 import traceback
 from lektor.types import Type
 from lektor.environment import Expression, FormatExpression, PRIMARY_ALT
@@ -6,7 +7,7 @@ from lektor.i18n import get_i18n_block
 
 def _reflow_and_split_labels(labels):
     rv = []
-    for lang, string in labels.iteritems():
+    for lang, string in six.iteritems(labels):
         for idx, item in enumerate(string.split(',')):
             try:
                 d = rv[idx]

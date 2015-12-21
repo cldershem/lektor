@@ -1,4 +1,5 @@
 import os
+import six
 import sys
 import stat
 import shutil
@@ -217,7 +218,7 @@ class BuildState(object):
         con = self.connect_to_database()
         try:
             cur = con.cursor()
-            for lang, title in info.title_i18n.iteritems():
+            for lang, title in six(info.title_i18n):
                 cur.execute('''
                     insert or replace into source_info
                         (path, alt, lang, type, source, title)

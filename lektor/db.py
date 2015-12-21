@@ -1,4 +1,5 @@
 import os
+import six
 import errno
 import hashlib
 import operator
@@ -26,6 +27,13 @@ from lektor.environment import PRIMARY_ALT
 from lektor.databags import Databags
 from lektor.filecontents import FileContents
 from lektor.utils import make_relative_url
+
+
+basestring = six.string_types
+try:
+    xrange
+except NameError:
+    xrange = range
 
 
 def _process_slug(slug, last_segment=False):
@@ -321,7 +329,7 @@ class Record(SourceObject):
 
     def get_record_label_i18n(self):
         rv = {}
-        for lang, _ in (self.datamodel.label_i18n or {}).iteritems():
+        for lang, _ in six.iteritems((self.datamodel.label_i18n or {})):
             label = self.datamodel.format_record_label(self, lang)
             if not label:
                 label = self.get_fallback_record_label(lang)
@@ -948,7 +956,7 @@ class Database(object):
                         continue
 
                     try:
-                        filename = filename.decode(fs_enc)
+                        filename = filename
                     except UnicodeError:
                         continue
 

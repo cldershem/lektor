@@ -1,4 +1,5 @@
 import re
+import six
 
 from jinja2 import is_undefined, TemplateNotFound
 from markupsafe import Markup
@@ -24,7 +25,7 @@ def discover_relevant_flowblock_models(flow, pad, record, alt):
     all_blocks = pad.db.flowblocks
     if flow_blocks is None:
         return dict((k, v.to_json(pad, record, alt))
-                    for k, v in all_blocks.iteritems())
+                    for k, v in six.iteritems(all_blocks))
 
     wanted_blocks = set()
     to_process = flow_blocks[:]

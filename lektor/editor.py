@@ -1,4 +1,5 @@
 import os
+import six
 import shutil
 import posixpath
 
@@ -118,7 +119,7 @@ class EditorSession(object):
             label = self.id
         can_be_deleted = not self.datamodel.protected and not self.is_root
         return {
-            'data': dict(self.iteritems()),
+            'data': dict(six.iteritems(self)),
             'record_info': {
                 'id': self.id,
                 'path': self.path,
@@ -178,13 +179,13 @@ class EditorSession(object):
             self.commit()
 
     def update(self, *args, **kwargs):
-        for key, value in dict(*args, **kwargs).iteritems():
+        for key, value in six.iteritems(dict(*args, **kwargs)):
             self[key] = value
 
     def iteritems(self):
         done = set()
 
-        for key, value in self.original_data.iteritems():
+        for key, value in six.iteritems(self.original_data):
             done.add(key)
             if key in implied_keys:
                 continue
@@ -201,15 +202,15 @@ class EditorSession(object):
                 yield key, value
 
     def iterkeys(self):
-        for key, _ in self.iteritems():
+        for key, _ in six.iteritems(self):
             yield key
 
     def itervalues(self):
-        for _, value in self.iteritems():
+        for _, value in six.iteritems(self):
             yield value
 
     def items(self):
-        return list(self.iteritems())
+        return list(six.iteritems(self))
 
     def keys(self):
         return list(self.iterkeys())
@@ -367,7 +368,7 @@ class EditorSession(object):
             pass
 
         with atomic_open(self.fs_path, 'wb') as f:
-            for chunk in serialize(self.iteritems(), encoding='utf-8'):
+            for chunk in serialize(six.iteritems(self), encoding='utf-8'):
                 f.write(chunk)
 
     def __repr__(self):

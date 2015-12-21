@@ -1,4 +1,5 @@
 import os
+import six
 import sys
 import pkg_resources
 
@@ -119,7 +120,7 @@ def load_plugins():
 def initialize_plugins(env):
     """Initializes the plugins for the environment."""
     plugins = load_plugins()
-    for plugin_id, plugin_cls in plugins.iteritems():
+    for plugin_id, plugin_cls in six.iteritems(plugins):
         env.plugin_controller.instanciate_plugin(plugin_id, plugin_cls)
     env.plugin_controller.emit('setup-env')
 
@@ -149,7 +150,7 @@ class PluginController(object):
 
     def iter_plugins(self):
         # XXX: sort?
-        return self.env.plugins.itervalues()
+        return six.itervalues(self.env.plugins)
 
     def emit(self, event, **kwargs):
         rv = {}

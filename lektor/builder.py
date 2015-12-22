@@ -218,7 +218,7 @@ class BuildState(object):
         con = self.connect_to_database()
         try:
             cur = con.cursor()
-            for lang, title in six(info.title_i18n):
+            for lang, title in six.iteritems(info.title_i18n):
                 cur.execute('''
                     insert or replace into source_info
                         (path, alt, lang, type, source, title)
